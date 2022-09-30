@@ -7,7 +7,7 @@ module.exports = app => {
 
     router.get("/email", usercontroller.signin);
 
-    router.get("/register", usercontroller.registerEmail);
+    router.post("/register", usercontroller.registerEmail);
 
     app.use('/api/users', router);
 };
