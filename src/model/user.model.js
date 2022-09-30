@@ -52,7 +52,7 @@ class User {
     }
 
     static registerEmailForNewsletter(email, result) {
-        db.query(`INSERT INTO register (email) VALUE (?)`, email, (req, res) => {
+        db.query(`INSERT INTO newsletter (email) VALUE (?)`, email, (req, res) => {
             if (err) {
                 console.log("error", err);
                 result(err, null);

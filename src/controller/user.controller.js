@@ -76,7 +76,7 @@ exports.signin = (req, res) => {
     });
 }
 
-exports.register = (req, res) => {
+exports.registerEmail = (req, res) => {
     if (!req.body) {
         res.status(400).send({
             message: "content can't be empty "
