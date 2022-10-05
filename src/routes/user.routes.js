@@ -5,7 +5,7 @@ const usercontroller = require("../controller/user.controller");
 module.exports = app => {
     router.post("/", usercontroller.signup);
 
-    router.get("/email", usercontroller.signin);
+    router.post("/email", usercontroller.signin);
 
     router.post("/register", usercontroller.registerEmail);
 

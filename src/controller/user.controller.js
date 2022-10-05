@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs/dist/bcrypt");
 const User = require("../model/user.model");
+const jwt = require('jsonwebtoken');
 
 
 exports.signup = async (req, res) => {
@@ -8,6 +9,15 @@ exports.signup = async (req, res) => {
             message: "content can't be empty!"
         });
     }
+        User.findByEmail(req.body.email, (err, data) => {
+            if(data) {
+                return res.status(400).send({
+                    status: "error",
+                    message: `user with email ${email} already exist!`
+                });
+            }
+        });
+    
     const { email, password } = req.body
 
     await bcrypt.hash(password, 10, (err, hash) => {
@@ -21,13 +31,22 @@ exports.signup = async (req, res) => {
         
         const user =  new User(email.trim(), hashpassword)
 
-        User.create(user, (err, data) => {
+        User.create(user, async (err, data) => {
             if (err) {
                 res.status(500).send({
                message: err.message || "some error occurred while creating the User."
            });
        }
-       else res.send(data)
+       else {
+        const token = await jwt.sign({ id: data.id }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.JWT_EXPIRE });
+        return res.status(200).send({
+            status: 'sucess',
+            data: {
+                token,
+                data
+            } 
+        });
+       }
    });
    
     })
@@ -66,9 +85,15 @@ exports.signin = (req, res) => {
                     });
                     return;
                 }
-                res.send(data)
+                const token = jwt.sign({ id: data.id }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.JWT_EXPIRE })
+                return res.status(200).send({
+                    status: 'sucess',
+                    data: {
+                        token,
+                        email: data.email
+                    }
+                })
                 
-
             })
             
 

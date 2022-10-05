@@ -50,6 +50,9 @@ class User {
             result({ kind: "not found" }, null);
         });
     }
+    static findOne(email, result) {
+        db.query(`SELECT * FROM users WHERE email`)
+    }
 
     static registerEmailForNewsletter(email, result) {
         db.query(`INSERT INTO newsletter (email) VALUE (?)`, email, (req, res) => {
