@@ -3,6 +3,7 @@ const User = require("../model/user.model");
 const jwt = require('jsonwebtoken');
 
 
+
 exports.signup = async (req, res) => {
     if (!req.body) {
         res.status(400).send({
@@ -17,6 +18,7 @@ exports.signup = async (req, res) => {
                 });
             }
         });
+
     
     const { email, password } = req.body
 
@@ -55,7 +57,7 @@ exports.signup = async (req, res) => {
 exports.signin = (req, res) => {
     const { email, password } = req.body
 
-    User.findByEmail(email.trim(), (err, data) => {
+    User.findByEmail(email, (err, data) => {
         if (err) {
             if(err.kind === "not found") {
                 res.status(404).send({
@@ -107,6 +109,11 @@ exports.registerEmail = (req, res) => {
             message: "content can't be empty "
         });
     }
+     if(User.findOne(req.body.email)) {
+        return res.status(400).send({
+            message: `email ${email} already exists!`
+        });
+     }
     const email = req.body;
 
     User.registerEmailForNewsletter(email, (err, data) => {
@@ -116,5 +123,26 @@ exports.registerEmail = (req, res) => {
             });
         }
         res.send(data)
+    })
+}
+
+exports.findAllUsers = (req, res) => {
+    User.getAll((err, data) => {
+        if (err) {
+            res.status(500).send({
+                message: err.message
+            });
+        }
+        try {
+            const token = req.headers.authorization.split(" ")[1];
+            jwt.verify(token, process.env.JWT_SECRET_KEY)
+    
+        }catch (err) {
+            console.log(err);
+            return res.status(400).send({
+                message: 'login to gain access!'
+            });
+        };
+        res.send(data);
     })
 }

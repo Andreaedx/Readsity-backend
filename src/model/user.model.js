@@ -50,10 +50,22 @@ class User {
             result({ kind: "not found" }, null);
         });
     }
-    static findOne(email, result) {
-        db.query(`SELECT * FROM users WHERE email`)
+
+    static getAll(result) {
+        db.query(`SELECT * FROM users`, (err, res) => {
+            if (err) {
+                console.log("error", err);
+                result(err, null);
+                return;
+            }
+            console.log("users: ", res);
+            result(null, res);
+        })
     }
 
+
+
+    // registering email for newletter
     static registerEmailForNewsletter(email, result) {
         db.query(`INSERT INTO newsletter (email) VALUE (?)`, email, (req, res) => {
             if (err) {
@@ -64,6 +76,22 @@ class User {
             console.log("email registered", {...email});
             result(null, {...email})
         })
+    }
+
+    static findOne(email, result) {
+        db.query(`SELECT * FROM newletter WHERE email = ?`, email, (req, res) => {
+            if (err) {
+                console.log('error', err);
+                result (err, null);
+                return;
+            }
+            if (res.length) {
+                console.log("found user: ", res[0]);
+                result (data, null);
+                return;
+            }
+            result({ kind: "not found" }, null);
+        });
     }
 }
 
